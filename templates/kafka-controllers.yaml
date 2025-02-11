@@ -1,0 +1,27 @@
+{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2/KafkaNodePool" }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  annotations:
+    strimzi.io/next-node-ids: "[100-104]"
+  name: kafka-controller
+  labels:
+    strimzi.io/cluster: kafka
+spec:
+  replicas: {{ .Values.kafka.controller.replicas }}
+  {{- if .Values.kafka.controller.resources }}
+  resources: {{ toYaml .Values.kafka.controller.resources | nindent 4 }}
+  {{- end }}
+  roles:
+    - controller
+  storage:
+    type: jbod
+    volumes:
+    {{- range $id, $map := .Values.kafka.controller.storage.volumes }}
+      - id: {{ $id }}
+        type: {{ $map.type | default $.Values.defaultStorageType }}
+        size: {{ $map.size }}
+        class: {{ $map.class }}
+        deleteClaim: {{ $map.deleteClaim | default $.Values.defaultDeleteClaim }}
+    {{- end }}
+{{- end }}

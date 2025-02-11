@@ -1,0 +1,16 @@
+{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2/KafkaTopic" }}
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: "kafka.schema.registry"
+  labels:
+    strimzi.io/cluster: kafka
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  partitions: 1
+  replicas: 1
+  config:
+    # http://kafka.apache.org/documentation/#topicconfigs
+    cleanup.policy: "compact"
+{{- end }}

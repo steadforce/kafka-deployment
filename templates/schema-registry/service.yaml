@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.schemaRegistry.application.name }}
+  name: {{ .Release.Name }}-{{ .Values.schemaRegistry.application.name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app:  {{ .Release.Name }}-{{ .Values.schemaRegistry.application.name }}

@@ -1,0 +1,16 @@
+suite: test some attributes of the kafka CR
+capabilities:
+  apiVersions:
+    - kafka.strimzi.io/v1beta2/Kafka
+templates:
+  - templates/kafka.yaml
+tests:
+- it: some kafka attributes
+  asserts:
+  - equal:
+      path: metadata.annotations["strimzi.io/kraft"]
+      value: enabled
+  -  equal:
+      path: metadata.annotations["strimzi.io/node-pools"]
+      value: enabled
+  - matchSnapshot: {}

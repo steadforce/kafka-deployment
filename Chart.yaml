@@ -1,0 +1,7 @@
+apiVersion: v2
+name: steadops-kafka
+version: 1.0.0
+dependencies:
+- name: akhq
+  version: 0.25.1
+  repository: https://akhq.io/

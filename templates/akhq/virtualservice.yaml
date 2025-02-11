@@ -1,0 +1,17 @@
+{{- if .Capabilities.APIVersions.Has "networking.istio.io/v1/VirtualService" }}
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: kafka-akhq
+spec:
+  gateways:
+  - {{ .Values.global.istio.ingressGateway.namespace }}/akhq-acme-gateway
+  hosts:
+  - {{ .Values.akhq.application.name }}.{{ .Values.global.acme.domain }}
+  http:
+  - route:
+    - destination:
+        host: kafka-akhq
+        port:
+          number: 80
+{{- end }}

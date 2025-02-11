@@ -1,0 +1,19 @@
+{{- if .Capabilities.APIVersions.Has "networking.istio.io/v1/VirtualService" }}
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.schemaRegistry.application.name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  gateways:
+  - {{ .Values.global.istio.ingressGateway.namespace }}/schema-registry-acme-gateway
+  hosts:
+  - {{ .Values.schemaRegistry.application.name }}.{{ .Values.global.acme.domain }}
+  http:
+  - route:
+    - destination:
+        host: {{ .Release.Name }}-{{ .Values.schemaRegistry.application.name }}
+        port:
+          number: 8081
+{{- end }}

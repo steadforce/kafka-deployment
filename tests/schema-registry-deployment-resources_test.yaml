@@ -1,0 +1,52 @@
+suite: test if the resource settings for schema-registry deployment container and sidecars are correct
+templates:
+- templates/schema-registry/deployment.yaml
+tests:
+- it: schema-registry container resources for local cluster
+  values:
+  - ../values-local.yaml
+  asserts:
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.limits.cpu
+      # on local cluster we expect 0 or 0m cpu limits
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.limits.memory
+      # on local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.requests.cpu
+      # on local cluster we expect 0 or 0m cpu requests
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.requests.memory
+      # on local cluster we expect 0 or 0Mi 0Gi memory requests
+      pattern: "^0.*"
+  - matchSnapshot: {}
+
+- it: schema-registry container resources for dev cluster
+  values:
+  - ../values-development.yaml
+  asserts: &schemaRegistryResourcesAsserts
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.limits.cpu
+      # on non-local cluster we expect non 0 cpu limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.limits.memory
+      # on non-local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.requests.cpu
+      # on non-local cluster we expect non 0 cpu requests
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.requests.memory
+      # on non-local cluster we expect non 0 memory requests
+      pattern: "^[1-9].*"
+  - matchSnapshot: {}
+
+- it: schema-registry container resources for prod cluster
+  values:
+  - ../values-production.yaml
+  asserts: *schemaRegistryResourcesAsserts

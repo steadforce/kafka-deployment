@@ -1,0 +1,63 @@
+suite: test if the resource settings for akhq deployment container and sidecars are correct
+templates:
+- charts/akhq/templates/configmap.yaml
+- charts/akhq/templates/deployment.yaml
+- charts/akhq/templates/secret.yaml
+tests:
+- it: akhq container resources for local cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-local.yaml
+  asserts:
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.limits.cpu
+      # on local cluster we expect 0 or 0m cpu limits
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.limits.memory
+      # on local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.requests.cpu
+      # on local cluster we expect 0 or 0m cpu requests
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.requests.memory
+      # on local cluster we expect 0 or 0Mi 0Gi memory requests
+      pattern: "^0.*"
+  - matchSnapshot: {}
+  documentSelector: &deploymentSelector
+    path: kind
+    skipEmptyTemplates: true
+    value: Deployment
+
+- it: akhq container resources for development cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  asserts: &akhqResourcesAsserts
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.limits.cpu
+      # on non-local cluster we expect non 0 cpu limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.limits.memory
+      # on non-local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.requests.cpu
+      # on non-local cluster we expect non 0 cpu requests
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].resources.requests.memory
+      # on non-local cluster we expect non 0 memory requests
+      pattern: "^[1-9].*"
+  - matchSnapshot: {}
+  documentSelector: *deploymentSelector
+
+- it: akhq container resources for prod cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts: *akhqResourcesAsserts
+  documentSelector: *deploymentSelector

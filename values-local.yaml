@@ -1,0 +1,43 @@
+akhq:
+  resources:
+    limits:
+      cpu: 0m
+      memory: 512Mi
+    requests:
+      cpu: 0m
+      memory: 0Mi
+entityOperator:
+  topicOperator:
+    resources:
+      limits:
+        cpu: 0m
+        memory: 512Mi
+      requests:
+        cpu: 0m
+        memory: 0Mi
+  userOperator:
+    resources:
+      limits:
+        cpu: 0m
+        memory: 256Mi
+      requests:
+        cpu: 0m
+        memory: 0Mi
+kafka:
+  cluster:
+    defaultReplicationFactor: 1
+    offsetsTopicReplicationFactor: 1
+    minInsyncReplicas: 1
+    replicas: 1
+    transactionStateLogReplicationFactor: 1
+    transactionStateLogMinInServiceReplicas: 1
+  controller:
+    replicas: 1
+schemaRegistry:
+  resources:
+    limits:
+      cpu: 0m
+      memory: 512Mi
+    requests:
+      cpu: 0m
+      memory: 0Mi

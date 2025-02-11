@@ -1,0 +1,51 @@
+{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2/Kafka" }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  annotations:
+    strimzi.io/kraft: enabled
+    strimzi.io/node-pools: enabled
+  name: kafka
+spec:
+  kafka:
+    config:
+      offsets.topic.replication.factor: {{ .Values.kafka.cluster.offsetsTopicReplicationFactor }}
+      transaction.state.log.replication.factor: {{ .Values.kafka.cluster.transactionStateLogReplicationFactor }}
+      transaction.state.log.min.isr: {{ .Values.kafka.cluster.transactionStateLogMinInServiceReplicas }}
+      auto.create.topics.enable: {{ .Values.kafka.cluster.autoCreateTopicsEnable | quote }}
+      default.replication.factor: {{ .Values.kafka.cluster.defaultReplicationFactor }}
+      min.insync.replicas: {{ .Values.kafka.cluster.minInsyncReplicas }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: false
+    rack:
+      topologyKey: {{ .Values.nodeAffinityLabel }}
+    storage:
+      type: jbod
+      volumes:
+      - class: nfs1
+        deleteClaim: false
+        id: 0
+        size: 1Gi
+        type: persistent-claim
+    template:
+      clusterRoleBinding:
+        metadata:
+          annotations:
+            argocd.argoproj.io/sync-options: Prune=false
+            argocd.argoproj.io/compare-options: IgnoreExtraneous
+    version: {{ .Values.kafka.cluster.version }}
+  entityOperator:
+    topicOperator:
+      resources:
+        {{- toYaml .Values.entityOperator.topicOperator.resources | nindent 8 }}
+    userOperator:
+      resources:
+        {{- toYaml .Values.entityOperator.userOperator.resources | nindent 8 }}
+{{- end }}

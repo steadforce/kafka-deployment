@@ -1,0 +1,104 @@
+suite: test some attributes of the kafka CR
+capabilities:
+  apiVersions:
+    - kafka.strimzi.io/v1beta2/Kafka
+templates:
+  - templates/kafka.yaml
+tests:
+- it: kafka topicOperator resources should not be set for local cluster
+  values:
+  - ../values-local.yaml
+  asserts:
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.limits.cpu
+      # on local cluster we expect 0 or 0m cpu limits
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.limits.memory
+      # on local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.requests.cpu
+      # on local cluster we expect 0 or 0m cpu requests
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.requests.memory
+      # on local cluster we expect 0 or 0Mi 0Gi memory requests
+      pattern: "^0.*"
+  - matchSnapshot: {}
+
+- it: kafka topicOperator resources should be set for development cluster
+  values:
+  - ../values-development.yaml
+  asserts: &topicOperatorResourcesAsserts
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.limits.cpu
+      # on non-local cluster we expect non 0 cpu limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.limits.memory
+      # on non-local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.requests.cpu
+      # on non-local cluster we expect non 0 cpu requests
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.topicOperator.resources.requests.memory
+      # on non-local cluster we expect non 0 memory requests
+      pattern: "^[1-9].*"
+  - matchSnapshot: {}
+
+- it: kafka topicOperator resources should be set for production cluster
+  values:
+  - ../values-production.yaml
+  asserts: *topicOperatorResourcesAsserts
+
+- it: kafka userOperator resources should not be set for local cluster
+  values:
+  - ../values-local.yaml
+  asserts:
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.limits.cpu
+      # on local cluster we expect 0 or 0m cpu limits
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.limits.memory
+      # on local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.requests.cpu
+      # on local cluster we expect 0 or 0m cpu requests
+      pattern: "^0.*"
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.requests.memory
+      # on local cluster we expect 0 or 0Mi 0Gi memory requests
+      pattern: "^0.*"
+  - matchSnapshot: {}
+
+- it: kafka userOperator resources should be set for development cluster
+  values:
+  - ../values-development.yaml
+  asserts: &userOperatorResourcesAsserts
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.limits.cpu
+      # on non-local cluster we expect non 0 cpu limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.limits.memory
+      # on non-local cluster we expect non 0 memory limits
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.requests.cpu
+      # on non-local cluster we expect non 0 cpu requests
+      pattern: "^[1-9].*"
+  - matchRegex:
+      path: spec.entityOperator.userOperator.resources.requests.memory
+      # on non-local cluster we expect non 0 memory requests
+      pattern: "^[1-9].*"
+  - matchSnapshot: {}
+
+- it: kafka userOperator resources should be set for production cluster
+  values:
+  - ../values-production.yaml
+  asserts: *userOperatorResourcesAsserts

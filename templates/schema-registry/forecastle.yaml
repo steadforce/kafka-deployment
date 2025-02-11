@@ -1,0 +1,11 @@
+{{- if .Capabilities.APIVersions.Has "forecastle.stakater.com/v1alpha1/ForecastleApp" }}
+apiVersion: forecastle.stakater.com/v1alpha1
+kind: ForecastleApp
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.schemaRegistry.application.name }}
+spec:
+  name: {{ .Values.schemaRegistry.application.name }}
+  group: {{ .Values.global.forecastle.group }}
+  icon: https://minio.{{ .Values.global.acme.domain }}/forecastle/icons/{{ .Values.schemaRegistry.application.name }}.png
+  url: https://{{ .Values.schemaRegistry.application.name }}.{{ .Values.global.acme.domain }}
+{{- end }}

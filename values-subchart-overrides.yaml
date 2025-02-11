@@ -1,0 +1,24 @@
+akhq:
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  application:
+    name: akhq
+  image:
+    pullPolicy: IfNotPresent
+  istio:
+    gateway: istio-system/akhq-gateway
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 320Mi
+  secrets:
+    akhq:
+      connections:
+        kafka:
+          properties:
+            bootstrap.servers: kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+          schema-registry:
+            url: http://kafka-schema-registry:8081

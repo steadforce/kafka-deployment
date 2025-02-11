@@ -1,0 +1,84 @@
+global:
+  acme:
+    domain: steadops.local.steadforce.com
+  forecastle:
+    group: steadforce-infrastructure
+  istio:
+    ingressGateway:
+      namespace: istio-ingress
+entityOperator:
+  topicOperator:
+    resources:
+      limits:
+        cpu: 400m
+        memory: 256Mi
+      requests:
+        cpu: 20m
+        memory: 224Mi
+  userOperator:
+    resources:
+      limits:
+        cpu: 400m
+        memory: 256Mi
+      requests:
+        cpu: 10m
+        memory: 192Mi
+kafka:
+  cluster:
+    autoCreateTopicsEnable: true
+    defaultReplicationFactor: 3
+    minInsyncReplicas: 1
+    # For upgrading details see
+    # https://strimzi.io/docs/operators/latest/deploying.html#proc-upgrading-brokers-newer-kafka-str
+    offsetsTopicReplicationFactor: 3
+    replicas: 3
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1024Mi
+      requests:
+        cpu: 200m
+        memory: 768Mi
+    storage:
+      volumes:
+      - class: &nfs1 nfs1
+        deleteClaim: &deleteClaim false
+        size: 1Gi
+        type: &persistentClaim persistent-claim
+    transactionStateLogMinInServiceReplicas: 2
+    transactionStateLogReplicationFactor: 3
+    version: "3.9.0"
+  controller:
+    replicas: 5
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1440Mi
+      requests:
+        cpu: 80m
+        memory: 1440Mi
+    storage:
+      volumes:
+        - class: *nfs1
+          deleteClaim: *deleteClaim
+          size: 1Gi
+          type: *persistentClaim
+nodeAffinityLabel: kubernetes.io/hostname
+schemaRegistry:
+  application:
+    name: schema-registry
+  bootstrap_servers: kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+  group_id: schema-registry
+  image:
+    repository: confluentinc/cp-schema-registry
+    tag: 7.7.0
+  istio:
+    gateway: istio-system/schema-registry-gateway
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 10m
+      memory: 256Mi
+  topic: kafka.private.schemas
