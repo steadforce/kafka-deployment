@@ -11,10 +11,10 @@ entityOperator:
     resources:
       limits:
         cpu: 400m
-        memory: 256Mi
+        memory: 288Mi
       requests:
         cpu: 20m
-        memory: 224Mi
+        memory: 256Mi
   userOperator:
     resources:
       limits:
@@ -35,10 +35,10 @@ kafka:
     resources:
       limits:
         cpu: 2000m
-        memory: 1024Mi
+        memory: 1152Mi
       requests:
         cpu: 200m
-        memory: 768Mi
+        memory: 896Mi
     storage:
       volumes:
       - class: &nfs1 nfs1
@@ -79,6 +79,6 @@ schemaRegistry:
       cpu: 400m
       memory: 512Mi
     requests:
-      cpu: 10m
-      memory: 256Mi
+      cpu: 40m
+      memory: 320Mi
   topic: kafka.private.schemas
