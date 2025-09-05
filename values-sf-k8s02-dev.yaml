@@ -1,0 +1,19 @@
+global:
+  acme:
+    domain: dev.k8s02.steadforce.com
+
+kafka:
+  cluster:
+    storage:
+      volumes:
+      - class: &cinderCsi cinder-csi
+        deleteClaim: &deleteClaim false
+        size: 1Gi
+        type: &persistentClaim persistent-claim
+  controller:
+    storage:
+      volumes:
+        - class: *cinderCsi
+          deleteClaim: *deleteClaim
+          size: 1Gi
+          type: *persistentClaim

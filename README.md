@@ -63,6 +63,11 @@ Since argo-cd ignores non-existent value files, they have to be removed when use
 
 ## Render resources local
 
+Render charts like argo-cd for local development purpose. Feel free to add the value files you
+want to test.
+
+### local
+
 ```bash
  helm template \
   --output-dir _local/local \
@@ -77,6 +82,59 @@ Since argo-cd ignores non-existent value files, they have to be removed when use
   -n kafka \
   .
 ```
+
+### dev 01
+
+```bash
+ helm template \
+  --output-dir _local/dev01 \
+  --release-name kafka \
+  -a forecastle.stakater.com/v1alpha1/ForecastleApp \
+  -a kafka.strimzi.io/v1beta2/Kafka \
+  -a kafka.strimzi.io/v1beta2/KafkaNodePool \
+  -a kafka.strimzi.io/v1beta2/KafkaTopic \
+  -a networking.istio.io/v1/VirtualService \
+  -f values-subchart-overrides.yaml \
+  -f values-development.yaml \
+  -n kafka \
+  .
+```
+
+### dev 02
+
+```bash
+ helm template \
+  --output-dir _local/dev02 \
+  --release-name kafka \
+  -a forecastle.stakater.com/v1alpha1/ForecastleApp \
+  -a kafka.strimzi.io/v1beta2/Kafka \
+  -a kafka.strimzi.io/v1beta2/KafkaNodePool \
+  -a kafka.strimzi.io/v1beta2/KafkaTopic \
+  -a networking.istio.io/v1/VirtualService \
+  -f values-subchart-overrides.yaml \
+  -f values-development.yaml \
+  -f values-sf-k8s02-dev.yaml \
+  -n kafka \
+  .
+```
+
+### prod 01
+
+```bash
+ helm template \
+  --output-dir _local/prod \
+  --release-name kafka \
+  -a forecastle.stakater.com/v1alpha1/ForecastleApp \
+  -a kafka.strimzi.io/v1beta2/Kafka \
+  -a kafka.strimzi.io/v1beta2/KafkaNodePool \
+  -a kafka.strimzi.io/v1beta2/KafkaTopic \
+  -a networking.istio.io/v1/VirtualService \
+  -f values-subchart-overrides.yaml \
+  -f values-production.yaml \
+  -n kafka \
+  .
+```
+
 
 ## Run act pipeline local
 
