@@ -31,7 +31,7 @@ tests:
     skipEmptyTemplates: true
     value: Deployment
 
-- it: akhq container resources for development cluster
+- it: akhq container resources for development 01 cluster
   values:
   - ../values-subchart-overrides.yaml
   - ../values-development.yaml
@@ -55,7 +55,15 @@ tests:
   - matchSnapshot: {}
   documentSelector: *deploymentSelector
 
-- it: akhq container resources for prod cluster
+- it: akhq container resources for development 02 cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  - ../values-sf-k8s02-dev.yaml
+  asserts: *akhqResourcesAsserts
+  documentSelector: *deploymentSelector
+
+- it: akhq container resources for production 01 cluster
   values:
   - ../values-subchart-overrides.yaml
   - ../values-production.yaml

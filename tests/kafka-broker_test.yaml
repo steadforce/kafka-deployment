@@ -28,7 +28,7 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka container resources should be set for development cluster
+- it: kafka container resources should be set for development 01 cluster
   values:
   - ../values-development.yaml
   asserts: &kafkaResourcesAsserts
@@ -50,7 +50,13 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka container resources should be set for production cluster
+- it: kafka container resources should be set for development 02 cluster
+  values:
+  - ../values-development.yaml
+  - ../values-sf-k8s02-dev.yaml
+  asserts: *kafkaResourcesAsserts
+
+- it: kafka container resources should be set for production 01 cluster
   values:
   - ../values-production.yaml
   asserts: *kafkaResourcesAsserts

@@ -24,7 +24,7 @@ tests:
       pattern: "^0.*"
   - matchSnapshot: {}
 
-- it: schema-registry container resources for dev cluster
+- it: schema-registry container resources for development 01 cluster
   values:
   - ../values-development.yaml
   asserts: &schemaRegistryResourcesAsserts
@@ -46,7 +46,13 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: schema-registry container resources for prod cluster
+- it: schema-registry container resources for development 02 cluster
+  values:
+  - ../values-development.yaml
+  - ../values-sf-k8s02-dev.yaml
+  asserts: *schemaRegistryResourcesAsserts
+
+- it: schema-registry container resources for production 01 cluster
   values:
   - ../values-production.yaml
   asserts: *schemaRegistryResourcesAsserts
