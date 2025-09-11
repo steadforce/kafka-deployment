@@ -1,6 +1,6 @@
 dependencies:
 - name: akhq
   repository: https://akhq.io/
-  version: 0.25.1
-digest: sha256:c982a6ca23c672c9e3f88193fbc47be88eb8c8e1ba2c3c7e0c4ada8c357860ca
-generated: "2025-02-11T11:43:57.200733048Z"
+  version: 0.26.0
+digest: sha256:be4000ccc2746687634c01583b0b8b6818b747f93e47a88ffe38ab777f06430f
+generated: "2025-09-11T11:31:27.049614197Z"
