@@ -29,13 +29,14 @@ kafka:
     offsetsTopicReplicationFactor: 1
     minInsyncReplicas: 1
     replicas: 1
+    # Requests/limits needs to be > zero on KafkaNodePools
     resources:
       limits:
-        cpu: 0m
+        cpu: 2000m
         memory: 1380Mi
       requests:
-        cpu: 0m
-        memory: 0Mi
+        cpu: 200m
+        memory: 896Mi
     transactionStateLogReplicationFactor: 1
     transactionStateLogMinInServiceReplicas: 1
   controller:
