@@ -26,14 +26,6 @@ spec:
         tls: false
     rack:
       topologyKey: {{ .Values.nodeAffinityLabel }}
-    storage:
-      type: jbod
-      volumes:
-      - class: nfs1
-        deleteClaim: false
-        id: 0
-        size: 1Gi
-        type: persistent-claim
     template:
       clusterRoleBinding:
         metadata:
