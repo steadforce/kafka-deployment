@@ -13,7 +13,7 @@ tests:
   - matchRegex:
       path: spec.resources.limits.cpu
       # on local cluster we expect 0 or 0m cpu limits but stimzi doesn't support it
-      pattern: "^[1-9].*"
+      pattern: "^0.*"
   - matchRegex:
       path: spec.resources.limits.memory
       # on local cluster we expect non 0 memory limits
@@ -21,11 +21,11 @@ tests:
   - matchRegex:
       path: spec.resources.requests.cpu
       # on local cluster we expect 0 or 0m cpu requests but stimzi doesn't support it
-      pattern: "^[1-9].*"
+      pattern: "^0.*"
   - matchRegex:
       path: spec.resources.requests.memory
       # on local cluster we expect 0 or 0Mi 0Gi memory requests but stimzi doesn't support it
-      pattern: "^[1-9].*"
+      pattern: "^0.*"
   - matchSnapshot: {}
 
 - it: kafka container resources should be set for development cluster

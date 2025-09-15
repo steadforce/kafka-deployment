@@ -19,7 +19,7 @@ entityOperator:
     resources:
       limits:
         cpu: 400m
-        memory: 288Mi
+        memory: 256Mi
       requests:
         cpu: 10m
         memory: 192Mi
@@ -35,7 +35,7 @@ kafka:
     resources:
       limits:
         cpu: 2000m
-        memory: 1380Mi
+        memory: 1152Mi
       requests:
         cpu: 200m
         memory: 896Mi

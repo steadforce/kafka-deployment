@@ -19,7 +19,7 @@ entityOperator:
     resources:
       limits:
         cpu: 0m
-        memory: 256Mi
+        memory: 288Mi
       requests:
         cpu: 0m
         memory: 0Mi
@@ -29,6 +29,13 @@ kafka:
     offsetsTopicReplicationFactor: 1
     minInsyncReplicas: 1
     replicas: 1
+    resources:
+      limits:
+        cpu: 0m
+        memory: 1380Mi
+      requests:
+        cpu: 0m
+        memory: 0Mi
     transactionStateLogReplicationFactor: 1
     transactionStateLogMinInServiceReplicas: 1
   controller:
