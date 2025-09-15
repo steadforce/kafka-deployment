@@ -3,6 +3,13 @@ akhq:
     argocd.argoproj.io/sync-wave: "10"
   application:
     name: akhq
+  # Explicitly adding (default) configuration to avoid missing application.yml
+  configuration:
+    akhq:
+      server:
+        access-log:
+          enabled: false
+          name: org.akhq.log.access
   image:
     pullPolicy: IfNotPresent
   istio:
