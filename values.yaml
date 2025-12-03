@@ -71,7 +71,7 @@ schemaRegistry:
   group_id: schema-registry
   image:
     repository: confluentinc/cp-schema-registry
-    tag: 8.0.0
+    tag: 8.1.1
   istio:
     gateway: istio-system/schema-registry-gateway
   resources:
