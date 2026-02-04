@@ -12,7 +12,7 @@ tests:
   asserts:
   - matchRegex:
       path: spec.resources.limits.cpu
-      # on local cluster we expect 0 or 0m cpu limits but stimzi doesn't support it
+      # on local cluster we expect 0 or 0m cpu limits but Strimzi doesn't support it
       pattern: "^[1-9].*"
   - matchRegex:
       path: spec.resources.limits.memory
@@ -20,11 +20,11 @@ tests:
       pattern: "^[1-9].*"
   - matchRegex:
       path: spec.resources.requests.cpu
-      # on local cluster we expect 0 or 0m cpu requests but stimzi doesn't support it
+      # on local cluster we expect 0 or 0m cpu requests but Strimzi doesn't support it
       pattern: "^[1-9].*"
   - matchRegex:
       path: spec.resources.requests.memory
-      # on local cluster we expect 0 or 0Mi 0Gi memory requests but stimzi doesn't support it
+      # on local cluster we expect 0 or 0Mi 0Gi memory requests but Strimzi doesn't support it
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
