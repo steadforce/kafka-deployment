@@ -1,0 +1,29 @@
+---
+# Source: kafka/templates/kafka-brokers.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  annotations:
+    strimzi.io/next-node-ids: "[0-4]"
+  name: kafka
+  labels:
+    strimzi.io/cluster: kafka
+spec:
+  replicas: 3
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1152Mi
+    requests:
+      cpu: 200m
+      memory: 896Mi
+  roles:
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 1Gi
+        class: nfs1
+        deleteClaim:
