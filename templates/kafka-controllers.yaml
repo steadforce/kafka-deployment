@@ -1,4 +1,4 @@
-{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2/KafkaNodePool" }}
+{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2" }}
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaNodePool
 metadata:

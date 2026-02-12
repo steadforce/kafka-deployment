@@ -1,7 +1,7 @@
 suite: test some attributes of the kafka controllers
 capabilities:
   apiVersions:
-    - kafka.strimzi.io/v1beta2/KafkaNodePool
+    - kafka.strimzi.io/v1beta2
 templates:
   - templates/kafka-controllers.yaml
 tests:

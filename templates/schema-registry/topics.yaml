@@ -1,5 +1,5 @@
-{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2/KafkaTopic" }}
-apiVersion: kafka.strimzi.io/v1beta1
+{{- if .Capabilities.APIVersions.Has "kafka.strimzi.io/v1beta2" }}
+apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: "kafka.schema.registry"

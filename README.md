@@ -61,21 +61,21 @@ Get argo-cd's used list of value files from a running cluster:
 This prints all configured value files as needed for helm templating.
 Since argo-cd ignores non-existent value files, they have to be removed when used in the statements below.
 
-## Render resources local
+## Render all manifests locally
 
-```bash
- helm template \
-  --output-dir _local/local \
-  --release-name kafka \
-  -a forecastle.stakater.com/v1alpha1/ForecastleApp \
-  -a kafka.strimzi.io/v1beta2/Kafka \
-  -a kafka.strimzi.io/v1beta2/KafkaNodePool \
-  -a kafka.strimzi.io/v1beta2/KafkaTopic \
-  -a networking.istio.io/v1/VirtualService \
-  -f values-subchart-overrides.yaml \
-  -f values-local.yaml \
-  -n kafka \
-  .
+```shell
+ helm dependency update && \
+ for cluster in $(yq '.environments | keys[]' helm-config.yaml); do
+    helm template \
+      -a "$(cluster=$cluster yq '.environments.[env(cluster)].apis | @csv' helm-config.yaml)" \
+      -f "$(cluster=$cluster yq '.environments.[env(cluster)].valueFiles | @csv' helm-config.yaml)" \
+      -n $(yq 'explode(.) | .namespace // ""' helm-config.yaml) \
+      --output-dir _local/$cluster \
+      --include-crds \
+      --release-name $(yq 'explode(.) | .releaseName // ""' helm-config.yaml) \
+      --skip-tests \
+      .
+ done
 ```
 
 ## Run act pipeline local
