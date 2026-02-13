@@ -1,0 +1,45 @@
+---
+# Source: kafka/templates/schema-registry/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-schema-registry
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-schema-registry
+  template:
+    metadata:
+      labels:
+        app: kafka-schema-registry
+    spec:
+      containers:
+      - name: schema-registry
+        image: confluentinc/cp-schema-registry:8.0.0
+        env:
+        - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+          value: kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+        - name: SCHEMA_REGISTRY_KAFKASTORE_GROUP_ID
+          value: schema-registry
+        - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC
+          value: kafka.private.schemas
+        - name: SCHEMA_REGISTRY_LISTENERS
+          value: "http://0.0.0.0:8081"
+        - name: SCHEMA_REGISTRY_HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: 0m
+            memory: 512Mi
+          requests:
+            cpu: 0m
+            memory: 0Mi
+        ports:
+        - containerPort: 8081
+          name: http
+          protocol: TCP
