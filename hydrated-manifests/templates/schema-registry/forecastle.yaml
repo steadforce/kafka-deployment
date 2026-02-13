@@ -1,0 +1,11 @@
+---
+# Source: kafka/templates/schema-registry/forecastle.yaml
+apiVersion: forecastle.stakater.com/v1alpha1
+kind: ForecastleApp
+metadata:
+  name: kafka-schema-registry
+spec:
+  name: schema-registry
+  group: steadforce-infrastructure
+  icon: https://minio.k8s01.steadforce.com/forecastle/icons/schema-registry.png
+  url: https://schema-registry.k8s01.steadforce.com
