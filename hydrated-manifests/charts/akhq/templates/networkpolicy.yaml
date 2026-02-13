@@ -1,0 +1,22 @@
+---
+# Source: kafka/charts/akhq/templates/networkpolicy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kafka-akhq
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.26.0
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+spec:
+  policyTypes:
+    - Ingress
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: akhq
+      app.kubernetes.io/instance: kafka
+  ingress:
+  - ports:
+    - port: http
+    - port: management
