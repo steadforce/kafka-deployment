@@ -89,3 +89,26 @@ To run the pipeline in local environment, startup the workbench, cd into the fol
 
 On first execution you're asked which flavour of the act image should be used. Using the default `medium`
 is a good starting point.
+
+## Hydration Workflow
+
+This repository implements a **GitOps Hydration Pattern**.
+The `helm-hydration.yaml` workflow is triggered by pushes to the `main` branch. It renders the Helm charts into static Kubernetes manifests and opens automated Pull Requests targeting the specific environment branches (e.g., `environments/local`, `environments/production`) defined in `helm-config.yaml`.
+
+### API Capabilities Configuration
+Because the hydration process runs in a CI environment without access to a live Kubernetes cluster, it must **mock** the cluster's available APIs (CRDs). This is controlled via the `apis` list in `helm-config.yaml`.
+
+If a chart (or its dependencies) uses conditional logic like `if .Capabilities.APIVersions.Has "..."`, and the specific API is missing from `helm-config.yaml`, the resource will **not** be rendered in the final manifest.
+
+### dependency Scanning
+To ensure all conditional resources are correctly rendered, use the provided static analysis tool:
+
+```bash
+./scan-helm-capabilities.sh
+```
+
+This script:
+1.  Downloads and extracts all chart dependencies locally.
+2.  Recursively scans all templates (`.yaml`, `.tpl`) in your chart and its sub-charts.
+3.  Identifies every instance of `.Capabilities.APIVersions.Has`.
+4.  Outputs the exact list of API strings (Groups and Kinds) required in your `helm-config.yaml`.
