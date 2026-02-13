@@ -1,0 +1,19 @@
+---
+# Source: kafka/templates/schema-registry/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: kafka-schema-registry
+  name: kafka-schema-registry
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app:  kafka-schema-registry
