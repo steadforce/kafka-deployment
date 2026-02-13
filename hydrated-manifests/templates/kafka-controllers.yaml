@@ -1,0 +1,29 @@
+---
+# Source: kafka/templates/kafka-controllers.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  annotations:
+    strimzi.io/next-node-ids: "[100-104]"
+  name: kafka-controller
+  labels:
+    strimzi.io/cluster: kafka
+spec:
+  replicas: 5
+  resources: 
+    limits:
+      cpu: 1000m
+      memory: 1440Mi
+    requests:
+      cpu: 80m
+      memory: 1440Mi
+  roles:
+    - controller
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 1Gi
+        class: nfs1
+        deleteClaim:
