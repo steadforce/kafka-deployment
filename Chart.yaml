@@ -1,7 +1,7 @@
 apiVersion: v2
-name: kafka
+name: &name akhq
 version: 1.0.0
 dependencies:
-- name: akhq
+- name: *name
   version: 0.26.0
   repository: https://akhq.io/
