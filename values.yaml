@@ -47,7 +47,7 @@ kafka:
         type: &persistentClaim persistent-claim
     transactionStateLogMinInServiceReplicas: 2
     transactionStateLogReplicationFactor: 3
-    version: "4.0.0"
+    version: "4.1.1"
   controller:
     replicas: 5
     resources:
