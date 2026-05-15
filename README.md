@@ -68,9 +68,9 @@ Since argo-cd ignores non-existent value files, they have to be removed when use
   --output-dir _local/local \
   --release-name kafka \
   -a forecastle.stakater.com/v1alpha1/ForecastleApp \
-  -a kafka.strimzi.io/v1beta2/Kafka \
-  -a kafka.strimzi.io/v1beta2/KafkaNodePool \
-  -a kafka.strimzi.io/v1beta2/KafkaTopic \
+  -a kafka.strimzi.io/v1/Kafka \\
+  -a kafka.strimzi.io/v1/KafkaNodePool \\
+  -a kafka.strimzi.io/v1/KafkaTopic \\
   -a networking.istio.io/v1/VirtualService \
   -f values-subchart-overrides.yaml \
   -f values-local.yaml \
