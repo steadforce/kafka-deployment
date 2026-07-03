@@ -1,0 +1,18 @@
+---
+# Source: akhq/charts/akhq/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-akhq
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.26.0
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    akhq:
+      server:
+        access-log:
+          enabled: false
+          name: org.akhq.log.access
