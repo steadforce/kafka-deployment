@@ -1,0 +1,85 @@
+---
+# Source: akhq/charts/akhq/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-akhq
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.26.0
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+spec:
+  revisionHistoryLimit: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: akhq
+      app.kubernetes.io/instance: kafka
+  template:
+    metadata:
+      annotations:
+        checksum/config: 611d145c2952cba41f119eb7891a0c504aed74091cb872c7dc49addaa17cab14
+        checksum/secrets: 4803c2dbefec34e2e3cb98bc9033705d92c73d56afd920106a718f9ddd70afb2
+      labels:
+        app.kubernetes.io/name: akhq
+        app.kubernetes.io/instance: kafka
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: akhq
+          image: "tchiotludo/akhq:0.26.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MICRONAUT_ENVIRONMENTS
+              value: secrets
+            - name: MICRONAUT_CONFIG_FILES
+              value: /app/application.yml,/app/application-secrets.yml
+          volumeMounts:
+            - name: config
+              mountPath: /app/application.yml
+              subPath: application.yml
+            - name: secrets
+              mountPath: /app/application-secrets.yml
+              subPath: application-secrets.yml
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: management
+              containerPort: 28081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: management
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: management
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            limits:
+              cpu: 0m
+              memory: 512Mi
+            requests:
+              cpu: 0m
+              memory: 0Mi
+      volumes:
+        - name: config
+          configMap:
+            name: kafka-akhq
+        - name: secrets
+          secret:
+            secretName: kafka-akhq-secrets

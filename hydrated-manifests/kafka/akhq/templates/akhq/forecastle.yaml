@@ -1,0 +1,11 @@
+---
+# Source: akhq/templates/akhq/forecastle.yaml
+apiVersion: forecastle.stakater.com/v1alpha1
+kind: ForecastleApp
+metadata:
+  name: kafka-akhq
+spec:
+  name: akhq
+  group: steadforce-infrastructure
+  icon: https://minio.steadops.local.steadforce.com/forecastle/icons/akhq.png
+  url: https://akhq.steadops.local.steadforce.com
