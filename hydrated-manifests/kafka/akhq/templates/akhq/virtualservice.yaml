@@ -1,0 +1,17 @@
+---
+# Source: akhq/templates/akhq/virtualservice.yaml
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: kafka-akhq
+spec:
+  gateways:
+    - istio-ingress/akhq-acme-gateway
+  hosts:
+    - akhq.dev.k8s01.steadforce.com
+  http:
+    - route:
+        - destination:
+            host: kafka-akhq
+            port:
+              number: 80
