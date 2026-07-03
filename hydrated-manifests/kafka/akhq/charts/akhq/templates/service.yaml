@@ -1,0 +1,26 @@
+---
+# Source: akhq/charts/akhq/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-akhq
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.26.0
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 28081
+      targetPort: management
+      protocol: TCP
+      name: management
+  selector:
+    app.kubernetes.io/name: akhq
+    app.kubernetes.io/instance: kafka
