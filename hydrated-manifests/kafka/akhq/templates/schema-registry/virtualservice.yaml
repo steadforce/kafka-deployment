@@ -1,0 +1,19 @@
+---
+# Source: akhq/templates/schema-registry/virtualservice.yaml
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: kafka-schema-registry
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  gateways:
+    - istio-ingress/schema-registry-acme-gateway
+  hosts:
+    - schema-registry.k8s01.steadforce.com
+  http:
+    - route:
+        - destination:
+            host: kafka-schema-registry
+            port:
+              number: 8081
