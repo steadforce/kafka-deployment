@@ -1,7 +1,7 @@
 suite: test some attributes of the kafka CR
 capabilities:
   apiVersions:
-    - kafka.strimzi.io/v1beta2/Kafka
+    - kafka.strimzi.io/v1
 templates:
   - templates/kafka.yaml
 tests:

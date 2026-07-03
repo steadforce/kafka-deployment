@@ -1,0 +1,26 @@
+# Configuration file used by the pipeline hydration step
+# to render the manifests for the different environments
+releaseName: &name kafka
+namespace: *name
+environments:
+  local:
+    apis: &apis
+    - forecastle.stakater.com/v1alpha1
+    - kafka.strimzi.io/v1
+    - networking.istio.io/v1
+    valueFiles:
+    - values-subchart-overrides.yaml
+    - values-local.yaml
+  sf-k8s01-dev:
+    apis: *apis
+    valueFiles: &devValues
+    - values-subchart-overrides.yaml
+    - values-development.yaml
+  sf-k8s02-dev:
+    apis: *apis
+    valueFiles: *devValues
+  sf-k8s01-prod:
+    apis: *apis
+    valueFiles:
+    - values-subchart-overrides.yaml
+    - values-production.yaml

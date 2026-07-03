@@ -1,7 +1,7 @@
 suite: test some attributes of the kafka brokers
 capabilities:
   apiVersions:
-    - kafka.strimzi.io/v1beta2/KafkaNodePool
+    - kafka.strimzi.io/v1
 templates:
   - templates/kafka-brokers.yaml
 tests:

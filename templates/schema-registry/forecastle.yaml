@@ -1,4 +1,4 @@
-{{- if .Capabilities.APIVersions.Has "forecastle.stakater.com/v1alpha1/ForecastleApp" }}
+{{- if .Capabilities.APIVersions.Has "forecastle.stakater.com/v1alpha1" }}
 apiVersion: forecastle.stakater.com/v1alpha1
 kind: ForecastleApp
 metadata:
