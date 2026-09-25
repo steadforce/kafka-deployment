@@ -3,5 +3,5 @@ name: steadops-kafka
 version: 1.0.0
 dependencies:
 - name: akhq
-  version: 0.26.0
+  version: 0.28.0
   repository: https://akhq.io/
