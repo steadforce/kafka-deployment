@@ -184,7 +184,7 @@ The pipeline also lints the chart:
 | Workflow                   | Trigger                                          | Reusable workflow                    |
 | -------------------------- | ------------------------------------------------ | ------------------------------------ |
 | `helm-unittest.yaml`       | every push                                       | `helm-unittest.yaml@v4.2.0`          |
-| `trufflehog.yaml`          | push and pull request to `main`, manual dispatch | `trufflehog-oss.yaml@v3.0.0`         |
+| `trufflehog.yaml`          | push and pull request to `main`, manual dispatch | `trufflehog-oss.yaml@v4.2.0`         |
 
 Both reusable workflows live in
 [`steadforce/steadops-workflows`](https://github.com/steadforce/steadops-workflows).
