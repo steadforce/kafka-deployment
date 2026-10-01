@@ -1,4 +1,4 @@
-suite: test if the resource settings for schema-registry deployment container and sidecars are correct
+suite: schema registry container resources per stage
 templates:
 - templates/schema-registry/deployment.yaml
 tests:

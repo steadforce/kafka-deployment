@@ -1,4 +1,4 @@
-suite: test if the resource settings for akhq deployment container and sidecars are correct
+suite: akhq container resources per stage
 templates:
 - charts/akhq/templates/configmap.yaml
 - charts/akhq/templates/deployment.yaml

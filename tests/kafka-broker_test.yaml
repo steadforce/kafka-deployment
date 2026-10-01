@@ -1,4 +1,4 @@
-suite: test some attributes of the kafka brokers
+suite: kafka broker KafkaNodePool per stage
 capabilities:
   apiVersions:
     - kafka.strimzi.io/v1/KafkaNodePool
