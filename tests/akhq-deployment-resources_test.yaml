@@ -4,7 +4,7 @@ templates:
 - charts/akhq/templates/deployment.yaml
 - charts/akhq/templates/secret.yaml
 tests:
-- it: akhq container resources for local cluster
+- it: sets minimal akhq container resources on the local cluster
   values:
   - ../values-subchart-overrides.yaml
   - ../values-local.yaml
@@ -31,7 +31,7 @@ tests:
     skipEmptyTemplates: true
     value: Deployment
 
-- it: akhq container resources for development cluster
+- it: sets non-zero akhq container resources on the development cluster
   values:
   - ../values-subchart-overrides.yaml
   - ../values-development.yaml
@@ -55,7 +55,7 @@ tests:
   - matchSnapshot: {}
   documentSelector: *deploymentSelector
 
-- it: akhq container resources for prod cluster
+- it: sets non-zero akhq container resources on the production cluster
   values:
   - ../values-subchart-overrides.yaml
   - ../values-production.yaml

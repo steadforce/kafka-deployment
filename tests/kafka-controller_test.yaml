@@ -6,7 +6,7 @@ templates:
   - templates/kafka-controllers.yaml
 tests:
 
-- it: kafka controller resources should not be set for local cluster
+- it: sets non-zero controller resources on the local cluster
   values:
     - ../values-local.yaml
   asserts:
@@ -28,7 +28,7 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka controller resources should be set for development cluster
+- it: sets non-zero controller resources on the development cluster
   values:
   - ../values-development.yaml
   asserts: &kafkaControllerResourcesAsserts
@@ -50,12 +50,12 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka controller resources should be set for production cluster
+- it: sets non-zero controller resources on the production cluster
   values:
   - ../values-production.yaml
   asserts: *kafkaControllerResourcesAsserts
 
-- it: kafka controller name
+- it: names the controller node pool kafka-controller
   asserts:
   - equal:
       path: metadata.name

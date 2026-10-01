@@ -5,7 +5,7 @@ capabilities:
 templates:
   - templates/kafka.yaml
 tests:
-- it: kafka topicOperator resources should not be set for local cluster
+- it: sets minimal topic operator resources on the local cluster
   values:
   - ../values-local.yaml
   asserts:
@@ -27,7 +27,7 @@ tests:
       pattern: "^0.*"
   - matchSnapshot: {}
 
-- it: kafka topicOperator resources should be set for development cluster
+- it: sets non-zero topic operator resources on the development cluster
   values:
   - ../values-development.yaml
   asserts: &topicOperatorResourcesAsserts
@@ -49,12 +49,12 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka topicOperator resources should be set for production cluster
+- it: sets non-zero topic operator resources on the production cluster
   values:
   - ../values-production.yaml
   asserts: *topicOperatorResourcesAsserts
 
-- it: kafka userOperator resources should not be set for local cluster
+- it: sets minimal user operator resources on the local cluster
   values:
   - ../values-local.yaml
   asserts:
@@ -76,7 +76,7 @@ tests:
       pattern: "^0.*"
   - matchSnapshot: {}
 
-- it: kafka userOperator resources should be set for development cluster
+- it: sets non-zero user operator resources on the development cluster
   values:
   - ../values-development.yaml
   asserts: &userOperatorResourcesAsserts
@@ -98,7 +98,7 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka userOperator resources should be set for production cluster
+- it: sets non-zero user operator resources on the production cluster
   values:
   - ../values-production.yaml
   asserts: *userOperatorResourcesAsserts

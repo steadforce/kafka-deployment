@@ -5,7 +5,7 @@ capabilities:
 templates:
   - templates/kafka.yaml
 tests:
-- it: some kafka attributes
+- it: enables the kraft and node pool annotations
   asserts:
   - equal:
       path: metadata.annotations["strimzi.io/kraft"]

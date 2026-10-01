@@ -6,7 +6,7 @@ templates:
   - templates/kafka-brokers.yaml
 tests:
 
-- it: kafka container resources should not be set for local cluster
+- it: sets non-zero broker resources on the local cluster
   values:
   - ../values-local.yaml
   asserts:
@@ -28,7 +28,7 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka container resources should be set for development cluster
+- it: sets non-zero broker resources on the development cluster
   values:
   - ../values-development.yaml
   asserts: &kafkaResourcesAsserts
@@ -50,12 +50,12 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka container resources should be set for production cluster
+- it: sets non-zero broker resources on the production cluster
   values:
   - ../values-production.yaml
   asserts: *kafkaResourcesAsserts
 
-- it: kafka broker name
+- it: names the broker node pool kafka
   asserts:
   - equal:
       path: metadata.name
