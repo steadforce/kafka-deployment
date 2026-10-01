@@ -61,3 +61,46 @@ tests:
       path: metadata.name
       value: kafka-controller
   - matchSnapshot: {}
+
+- it: uses 1 controller replica on the local cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-local.yaml
+  asserts:
+  - equal:
+      path: spec.replicas
+      value: 1
+
+- it: uses 5 controller replicas on the development cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  asserts: &controllerReplicasAssert
+  - equal:
+      path: spec.replicas
+      value: 5
+
+- it: uses 5 controller replicas on the production cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts: *controllerReplicasAssert
+
+- it: sets the controller persistent nfs1 storage volume
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - equal:
+      path: spec.storage.volumes[?(@.id == 0)].type
+      value: persistent-claim
+  - equal:
+      path: spec.storage.volumes[?(@.id == 0)].class
+      value: nfs1
+  - equal:
+      path: spec.storage.volumes[?(@.id == 0)].size
+      value: 1Gi
+  # deleteClaim: false falls through `default` and renders as null; both
+  # keep the PVCs on deletion, so accept either but never true
+  - isNullOrEmpty:
+      path: spec.storage.volumes[?(@.id == 0)].deleteClaim

@@ -1,0 +1,119 @@
+suite: schema registry deployment and routing per stage
+release:
+  name: kafka
+  namespace: kafka
+templates:
+- templates/schema-registry/deployment.yaml
+- templates/schema-registry/service.yaml
+- templates/schema-registry/virtualservice.yaml
+- templates/schema-registry/forecastle.yaml
+capabilities:
+  apiVersions:
+  - networking.istio.io/v1/VirtualService
+  - forecastle.stakater.com/v1alpha1/ForecastleApp
+tests:
+- it: uses the schema registry image and kafka store settings
+  template: templates/schema-registry/deployment.yaml
+  values: &productionValues
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].image
+      pattern: "^confluentinc/cp-schema-registry:"
+  - equal:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].env[?(@.name == "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS")].value
+      value: kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+  - equal:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].env[?(@.name == "SCHEMA_REGISTRY_KAFKASTORE_GROUP_ID")].value
+      value: schema-registry
+  - equal:
+      path: spec.template.spec.containers[?(@.name == "schema-registry")].env[?(@.name == "SCHEMA_REGISTRY_KAFKASTORE_TOPIC")].value
+      value: kafka.private.schemas
+  - equal:
+      path: metadata.name
+      value: kafka-schema-registry
+
+- it: selects the schema registry pods in the service
+  template: templates/schema-registry/service.yaml
+  values: *productionValues
+  asserts:
+  - equal:
+      path: spec.selector.app
+      value: kafka-schema-registry
+
+- it: routes the local schema registry host through the ingress gateway
+  template: templates/schema-registry/virtualservice.yaml
+  values: &localValues
+  - ../values-subchart-overrides.yaml
+  - ../values-local.yaml
+  asserts:
+  - equal:
+      path: spec.hosts
+      value:
+      - schema-registry.steadops.local.steadforce.com
+  - equal:
+      path: spec.gateways
+      value:
+      - istio-ingress/schema-registry-acme-gateway
+  - equal:
+      path: spec.http[0].route[0].destination.host
+      value: kafka-schema-registry
+
+- it: routes the development schema registry host
+  template: templates/schema-registry/virtualservice.yaml
+  values: &developmentValues
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  asserts:
+  - equal:
+      path: spec.hosts
+      value:
+      - schema-registry.dev.k8s01.steadforce.com
+
+- it: routes the production schema registry host
+  template: templates/schema-registry/virtualservice.yaml
+  values: *productionValues
+  asserts:
+  - equal:
+      path: spec.hosts
+      value:
+      - schema-registry.k8s01.steadforce.com
+
+- it: uses the ingress gateway namespace parameter for the schema registry gateway
+  template: templates/schema-registry/virtualservice.yaml
+  values: *developmentValues
+  set:
+    global.istio.ingressGateway.namespace: custom-ingress
+  asserts:
+  - equal:
+      path: spec.gateways
+      value:
+      - custom-ingress/schema-registry-acme-gateway
+
+- it: sets the development schema registry forecastle entry
+  template: templates/schema-registry/forecastle.yaml
+  values: *developmentValues
+  asserts:
+  - equal:
+      path: spec.group
+      value: steadforce-infrastructure
+  - equal:
+      path: spec.url
+      value: https://schema-registry.dev.k8s01.steadforce.com
+  - equal:
+      path: spec.icon
+      value: https://minio.dev.k8s01.steadforce.com/forecastle/icons/schema-registry.png
+
+- it: sets the production schema registry forecastle url
+  template: templates/schema-registry/forecastle.yaml
+  values: *productionValues
+  asserts:
+  - equal:
+      path: spec.url
+      value: https://schema-registry.k8s01.steadforce.com
+
+- it: matches the production schema registry snapshot
+  values: *productionValues
+  asserts:
+  - matchSnapshot: {}

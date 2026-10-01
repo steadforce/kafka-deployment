@@ -1,4 +1,4 @@
-suite: test some attributes of the kafka CR
+suite: kafka cluster config per stage
 capabilities:
   apiVersions:
     - kafka.strimzi.io/v1/Kafka
@@ -14,3 +14,66 @@ tests:
       path: metadata.annotations["strimzi.io/node-pools"]
       value: enabled
   - matchSnapshot: {}
+
+- it: uses single replica replication settings on the local cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-local.yaml
+  asserts:
+  - equal:
+      path: spec.kafka.config["offsets.topic.replication.factor"]
+      value: 1
+  - equal:
+      path: spec.kafka.config["transaction.state.log.replication.factor"]
+      value: 1
+  - equal:
+      path: spec.kafka.config["transaction.state.log.min.isr"]
+      value: 1
+  - equal:
+      path: spec.kafka.config["default.replication.factor"]
+      value: 1
+  - equal:
+      path: spec.kafka.config["min.insync.replicas"]
+      value: 1
+
+- it: uses three replica replication settings on the development cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  asserts: &clusterReplicationAsserts
+  - equal:
+      path: spec.kafka.config["offsets.topic.replication.factor"]
+      value: 3
+  - equal:
+      path: spec.kafka.config["transaction.state.log.replication.factor"]
+      value: 3
+  - equal:
+      path: spec.kafka.config["transaction.state.log.min.isr"]
+      value: 2
+  - equal:
+      path: spec.kafka.config["default.replication.factor"]
+      value: 3
+  - equal:
+      path: spec.kafka.config["min.insync.replicas"]
+      value: 1
+
+- it: uses three replica replication settings on the production cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts: *clusterReplicationAsserts
+
+- it: sets kafka version, topic auto creation and rack topology key
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - equal:
+      path: spec.kafka.version
+      value: 4.1.1
+  - equal:
+      path: spec.kafka.config["auto.create.topics.enable"]
+      value: "true"
+  - equal:
+      path: spec.kafka.rack.topologyKey
+      value: kubernetes.io/hostname

@@ -1,0 +1,141 @@
+suite: akhq subchart overrides and routing per stage
+release:
+  name: kafka
+  namespace: kafka
+templates:
+- charts/akhq/templates/deployment.yaml
+# included by the akhq deployment checksum annotations, not asserted
+- charts/akhq/templates/configmap.yaml
+# included by the akhq deployment checksum annotations, not asserted
+- charts/akhq/templates/secret.yaml
+- templates/akhq/virtualservice.yaml
+- templates/akhq/forecastle.yaml
+capabilities:
+  apiVersions:
+  - networking.istio.io/v1/VirtualService
+  - forecastle.stakater.com/v1alpha1/ForecastleApp
+tests:
+- it: sets the akhq deployment sync wave, pull policy and image repository
+  template: charts/akhq/templates/deployment.yaml
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - equal:
+      path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+      value: "10"
+  - equal:
+      path: spec.template.spec.containers[?(@.name == "akhq")].imagePullPolicy
+      value: IfNotPresent
+  - matchRegex:
+      path: spec.template.spec.containers[?(@.name == "akhq")].image
+      pattern: "^tchiotludo/akhq:"
+  - equal:
+      path: spec.template.spec.volumes[?(@.name == "secrets")].secret.secretName
+      value: kafka-akhq-secrets
+  - equal:
+      path: spec.template.spec.containers[?(@.name == "akhq")].env[?(@.name == "MICRONAUT_CONFIG_FILES")].value
+      value: /app/application.yml,/app/application-secrets.yml
+
+- it: renders the akhq application.yml with access log disabled
+  template: charts/akhq/templates/configmap.yaml
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - matchRegex:
+      path: data["application.yml"]
+      pattern: "access-log:\\s+enabled: false\\s+name: org.akhq.log.access"
+
+- it: renders the akhq connection secret
+  template: charts/akhq/templates/secret.yaml
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - equal:
+      path: metadata.name
+      value: kafka-akhq-secrets
+  - isNotNullOrEmpty:
+      path: data["application-secrets.yml"]
+
+- it: routes the local akhq host through the ingress gateway
+  template: templates/akhq/virtualservice.yaml
+  values: &localValues
+  - ../values-subchart-overrides.yaml
+  - ../values-local.yaml
+  asserts:
+  - equal:
+      path: spec.hosts
+      value:
+      - akhq.steadops.local.steadforce.com
+  - equal:
+      path: spec.gateways
+      value:
+      - istio-ingress/akhq-acme-gateway
+  - equal:
+      path: spec.http[0].route[0].destination.host
+      value: kafka-akhq
+
+- it: routes the development akhq host
+  template: templates/akhq/virtualservice.yaml
+  values: &developmentValues
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  asserts:
+  - equal:
+      path: spec.hosts
+      value:
+      - akhq.dev.k8s01.steadforce.com
+
+- it: routes the production akhq host
+  template: templates/akhq/virtualservice.yaml
+  values: &productionValues
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - equal:
+      path: spec.hosts
+      value:
+      - akhq.k8s01.steadforce.com
+
+- it: uses the ingress gateway namespace parameter for the akhq gateway
+  template: templates/akhq/virtualservice.yaml
+  values: *developmentValues
+  set:
+    global.istio.ingressGateway.namespace: custom-ingress
+  asserts:
+  - equal:
+      path: spec.gateways
+      value:
+      - custom-ingress/akhq-acme-gateway
+
+- it: sets the development akhq forecastle entry
+  template: templates/akhq/forecastle.yaml
+  values: *developmentValues
+  asserts:
+  - equal:
+      path: spec.name
+      value: akhq
+  - equal:
+      path: spec.group
+      value: steadforce-infrastructure
+  - equal:
+      path: spec.url
+      value: https://akhq.dev.k8s01.steadforce.com
+  - equal:
+      path: spec.icon
+      value: https://minio.dev.k8s01.steadforce.com/forecastle/icons/akhq.png
+
+- it: sets the production akhq forecastle url
+  template: templates/akhq/forecastle.yaml
+  values: *productionValues
+  asserts:
+  - equal:
+      path: spec.url
+      value: https://akhq.k8s01.steadforce.com
+
+- it: matches the local akhq snapshot
+  values: *localValues
+  asserts:
+  - matchSnapshot: {}
