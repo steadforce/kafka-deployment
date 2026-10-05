@@ -40,7 +40,7 @@ tests:
   values:
   - ../values-subchart-overrides.yaml
   - ../values-development.yaml
-  asserts: &clusterReplicationAsserts
+  asserts: &clusterReplicationAssert
   - equal:
       path: spec.kafka.config["offsets.topic.replication.factor"]
       value: 3
@@ -61,7 +61,7 @@ tests:
   values:
   - ../values-subchart-overrides.yaml
   - ../values-production.yaml
-  asserts: *clusterReplicationAsserts
+  asserts: *clusterReplicationAssert
 
 - it: sets kafka version, topic auto creation and rack topology key
   values:

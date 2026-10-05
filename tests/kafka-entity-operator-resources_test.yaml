@@ -30,7 +30,7 @@ tests:
 - it: sets non-zero topic operator resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &topicOperatorResourcesAsserts
+  asserts: &topicOperatorResourcesAssert
   - matchRegex:
       path: spec.entityOperator.topicOperator.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -52,7 +52,7 @@ tests:
 - it: sets non-zero topic operator resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *topicOperatorResourcesAsserts
+  asserts: *topicOperatorResourcesAssert
 
 - it: sets minimal user operator resources on the local cluster
   values:
@@ -79,7 +79,7 @@ tests:
 - it: sets non-zero user operator resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &userOperatorResourcesAsserts
+  asserts: &userOperatorResourcesAssert
   - matchRegex:
       path: spec.entityOperator.userOperator.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -101,4 +101,4 @@ tests:
 - it: sets non-zero user operator resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *userOperatorResourcesAsserts
+  asserts: *userOperatorResourcesAssert

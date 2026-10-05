@@ -31,7 +31,7 @@ tests:
 - it: sets non-zero controller resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &kafkaControllerResourcesAsserts
+  asserts: &controllerResourcesAssert
   - matchRegex:
       path: spec.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -53,7 +53,7 @@ tests:
 - it: sets non-zero controller resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *kafkaControllerResourcesAsserts
+  asserts: *controllerResourcesAssert
 
 - it: names the controller node pool kafka-controller
   asserts:

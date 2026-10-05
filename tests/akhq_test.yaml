@@ -17,7 +17,7 @@ capabilities:
 tests:
 - it: sets the akhq deployment sync wave, pull policy and image repository
   template: charts/akhq/templates/deployment.yaml
-  values:
+  values: &productionValues
   - ../values-subchart-overrides.yaml
   - ../values-production.yaml
   asserts:
@@ -39,9 +39,7 @@ tests:
 
 - it: renders the akhq application.yml with access log disabled
   template: charts/akhq/templates/configmap.yaml
-  values:
-  - ../values-subchart-overrides.yaml
-  - ../values-production.yaml
+  values: *productionValues
   asserts:
   - matchRegex:
       path: data["application.yml"]
@@ -49,9 +47,7 @@ tests:
 
 - it: renders the akhq connection secret
   template: charts/akhq/templates/secret.yaml
-  values:
-  - ../values-subchart-overrides.yaml
-  - ../values-production.yaml
+  values: *productionValues
   asserts:
   - equal:
       path: metadata.name
@@ -90,9 +86,7 @@ tests:
 
 - it: routes the production akhq host
   template: templates/akhq/virtualservice.yaml
-  values: &productionValues
-  - ../values-subchart-overrides.yaml
-  - ../values-production.yaml
+  values: *productionValues
   asserts:
   - equal:
       path: spec.hosts

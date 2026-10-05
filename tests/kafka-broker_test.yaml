@@ -31,7 +31,7 @@ tests:
 - it: sets non-zero broker resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &kafkaResourcesAsserts
+  asserts: &brokerResourcesAssert
   - matchRegex:
       path: spec.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -53,7 +53,7 @@ tests:
 - it: sets non-zero broker resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *kafkaResourcesAsserts
+  asserts: *brokerResourcesAssert
 
 - it: names the broker node pool kafka
   asserts:

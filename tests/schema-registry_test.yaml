@@ -44,7 +44,7 @@ tests:
 
 - it: routes the local schema registry host through the ingress gateway
   template: templates/schema-registry/virtualservice.yaml
-  values: &localValues
+  values:
   - ../values-subchart-overrides.yaml
   - ../values-local.yaml
   asserts:

@@ -27,7 +27,7 @@ tests:
 - it: sets non-zero schema-registry container resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &schemaRegistryResourcesAsserts
+  asserts: &schemaRegistryResourcesAssert
   - matchRegex:
       path: spec.template.spec.containers[?(@.name == "schema-registry")].resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -49,4 +49,4 @@ tests:
 - it: sets non-zero schema-registry container resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *schemaRegistryResourcesAsserts
+  asserts: *schemaRegistryResourcesAssert
