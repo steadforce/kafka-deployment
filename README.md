@@ -279,3 +279,29 @@ To change the `akhq` version by hand, edit `Chart.yaml` and regenerate `Chart.lo
 
 Commit the new `Chart.lock` and the new archive in `charts/` together with `Chart.yaml`. See the
 [Helm docs](https://helm.sh/docs/topics/charts/#chart-dependencies) for details.
+
+## Recovering the Cluster ID
+
+Strimzi keeps the KRaft cluster ID only in the status of the `Kafka` and `KafkaNodePool` resources, while the
+volumes keep it in `meta.properties`. If these resources are deleted and recreated, the status is lost, Strimzi
+generates a new ID, and every broker and controller fails with `Invalid cluster.id in: .../meta.properties`. This
+happened on sf-k8s01-dev on 2026-07-09 and was fixed on 2026-10-14.
+
+| Cluster | Cluster ID |
+| --- | --- |
+| sf-k8s01-dev | `YX_tSIMnSlmlqGXlB7P_cg` |
+
+To restore it, pause the reconciliation, set the ID in the status of the `Kafka` resource and both node pools, and
+resume the reconciliation. Delete pods that still wait in `CrashLoopBackOff` so they restart at once.
+
+```sh
+ ID=YX_tSIMnSlmlqGXlB7P_cg
+ kubectl -n kafka annotate kafka kafka strimzi.io/pause-reconciliation=true
+ for resource in kafka/kafka kafkanodepool/kafka kafkanodepool/kafka-controller; do
+   kubectl -n kafka patch "$resource" --subresource status --type merge -p "{\"status\":{\"clusterId\":\"$ID\"}}"
+ done
+ kubectl -n kafka annotate kafka kafka strimzi.io/pause-reconciliation-
+```
+
+If the ID is not known, read it from a volume, as described in the
+[Strimzi recovery guide](https://strimzi.io/docs/operators/latest/deploying#proc-cluster-recovery-volume-str).
