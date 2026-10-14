@@ -103,7 +103,7 @@ tests:
       value: https://schema-registry.dev.k8s01.steadforce.com
   - equal:
       path: spec.icon
-      value: https://minio.dev.k8s01.steadforce.com/forecastle/icons/schema-registry.png
+      value: https://cdn.jsdelivr.net/npm/simple-icons@13.21.0/icons/apachekafka.svg
 
 - it: sets the production schema registry forecastle url
   template: templates/schema-registry/forecastle.yaml

@@ -119,7 +119,7 @@ tests:
       value: https://akhq.dev.k8s01.steadforce.com
   - equal:
       path: spec.icon
-      value: https://minio.dev.k8s01.steadforce.com/forecastle/icons/akhq.png
+      value: https://raw.githubusercontent.com/tchiotludo/akhq/0.25.1/client/src/images/logo.svg
 
 - it: sets the production akhq forecastle url
   template: templates/akhq/forecastle.yaml

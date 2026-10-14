@@ -47,7 +47,8 @@ assume the release name `kafka` in the namespace `kafka`.
 
 `values.yaml` sets the top-level keys `global` (ACME domain, Forecastle group, Istio ingress gateway namespace),
 `entityOperator` (topic and user operator resources), `kafka` (cluster and controller replicas, resources, storage,
-and Kafka version), `nodeAffinityLabel`, and `schemaRegistry` (image, bootstrap servers, topic, resources).
+and Kafka version), `nodeAffinityLabel`, and `schemaRegistry` (Forecastle icon, image, bootstrap servers, topic,
+resources). `values-subchart-overrides.yaml` sets the AKHQ Forecastle icon in `akhq.application.icon`.
 
 ### Values for Subcharts
 
