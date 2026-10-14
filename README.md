@@ -259,7 +259,7 @@ test results and the Teams notification.
 
 ## Dependency Updates
 
-[Renovate](https://docs.renovatebot.com/) uses `config:base` with the dependency dashboard, so it opens pull
+[Renovate](https://docs.renovatebot.com/) uses `config:recommended` with the dependency dashboard, so it opens pull
 requests for updates without automerging them, for example for the `akhq` chart, the Schema Registry image, and the
 pinned `steadops-workflows` versions. `helmUpdateSubChartArchives` makes Renovate also update the archive in `charts/`.
 
