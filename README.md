@@ -47,7 +47,8 @@ assume the release name `kafka` in the namespace `kafka`.
 
 `values.yaml` sets the top-level keys `global` (ACME domain, Forecastle group, Istio ingress gateway namespace),
 `entityOperator` (topic and user operator resources), `kafka` (cluster and controller replicas, resources, storage,
-and Kafka version), `nodeAffinityLabel`, and `schemaRegistry` (image, bootstrap servers, topic, resources).
+and Kafka version), `nodeAffinityLabel`, and `schemaRegistry` (Forecastle icon, image, bootstrap servers, topic,
+resources). `values-subchart-overrides.yaml` sets the AKHQ Forecastle icon in `akhq.application.icon`.
 
 ### Values for Subcharts
 
@@ -116,7 +117,25 @@ templates.
    .
 ```
 
-In the workbench, run the same `helm template` command without the `docker run` wrapper.
+In the workbench, run `helm template` directly:
+
+```sh
+ env=local
+ helm template \
+   -a forecastle.stakater.com/v1alpha1/ForecastleApp \
+   -a kafka.strimzi.io/v1/Kafka \
+   -a kafka.strimzi.io/v1/KafkaNodePool \
+   -a kafka.strimzi.io/v1/KafkaTopic \
+   -a networking.istio.io/v1/VirtualService \
+   -f values-subchart-overrides.yaml \
+   -f "values-$env.yaml" \
+   --include-crds \
+   -n kafka \
+   --output-dir "_local/$env" \
+   --release-name \
+   kafka \
+   .
+```
 
 ### Value Files Used by Argo CD
 
@@ -129,7 +148,7 @@ from a running cluster in the workbench:
    yq '.spec.source.helm.valueFiles[]'
 ```
 
-Containerized flow:
+Containerized flow, where `KUBECONFIG` must point to a single file (or be unset to use `~/.kube/config`):
 
 ```sh
  docker run \
@@ -137,7 +156,7 @@ Containerized flow:
    --entrypoint sh \
    --rm \
    -u $(id -u) \
-   -v "$KUBECONFIG:/tmp/kubeconfig:ro" \
+   -v "${KUBECONFIG:-$HOME/.kube/config}:/tmp/kubeconfig:ro" \
    ghcr.io/steadforce/steadops/workbenches/k8s:main -c '
      kubectl -n argocd get applications.argoproj.io kafka -o yaml |
        yq ".spec.source.helm.valueFiles[]"
@@ -160,6 +179,25 @@ archive in `charts/`.
    .
 ```
 
+In the workbench, run the suites directly:
+
+```sh
+ helm unittest .
+```
+
+The workbench image does not ship the helm-unittest plugin. The command only works because the workbench mounts
+your `$HOME`, so a plugin installed in your host's Helm home is available. Install it once with:
+
+```sh
+ helm plugin install --verify=false https://github.com/helm-unittest/helm-unittest.git
+```
+
+Helm 4 needs `--verify=false` for this unsigned plugin, as the pipeline does.
+
+The suites cover, per environment, the broker, controller, entity operator, AKHQ, and Schema Registry resources,
+the Kafka cluster config, the `akhq` subchart overrides, the Schema Registry image and Kafka store settings, and the
+AKHQ and Schema Registry routing and Forecastle entries.
+
 To write a JUnit report like the pipeline does, add `-t JUnit -o test-output.xml`. Without `-t`, helm-unittest
 writes XUnit. `test-output.xml` is gitignored.
 
@@ -175,9 +213,6 @@ The pipeline also lints the chart:
    alpine/helm lint \
    .
 ```
-
-> [!NOTE]
-> The workbench image does not ship the helm-unittest plugin, so use the containerized command there as well.
 
 ## CI/CD
 
@@ -225,7 +260,7 @@ test results and the Teams notification.
 
 ## Dependency Updates
 
-[Renovate](https://docs.renovatebot.com/) uses `config:base` with the dependency dashboard, so it opens pull
+[Renovate](https://docs.renovatebot.com/) uses `config:recommended` with the dependency dashboard, so it opens pull
 requests for updates without automerging them, for example for the `akhq` chart, the Schema Registry image, and the
 pinned `steadops-workflows` versions. `helmUpdateSubChartArchives` makes Renovate also update the archive in `charts/`.
 
@@ -244,3 +279,29 @@ To change the `akhq` version by hand, edit `Chart.yaml` and regenerate `Chart.lo
 
 Commit the new `Chart.lock` and the new archive in `charts/` together with `Chart.yaml`. See the
 [Helm docs](https://helm.sh/docs/topics/charts/#chart-dependencies) for details.
+
+## Recovering the Cluster ID
+
+Strimzi keeps the KRaft cluster ID only in the status of the `Kafka` and `KafkaNodePool` resources, while the
+volumes keep it in `meta.properties`. If these resources are deleted and recreated, the status is lost, Strimzi
+generates a new ID, and every broker and controller fails with `Invalid cluster.id in: .../meta.properties`. This
+happened on sf-k8s01-dev on 2026-07-09 and was fixed on 2026-10-14.
+
+| Cluster | Cluster ID |
+| --- | --- |
+| sf-k8s01-dev | `YX_tSIMnSlmlqGXlB7P_cg` |
+
+To restore it, pause the reconciliation, set the ID in the status of the `Kafka` resource and both node pools, and
+resume the reconciliation. Delete pods that still wait in `CrashLoopBackOff` so they restart at once.
+
+```sh
+ ID=YX_tSIMnSlmlqGXlB7P_cg
+ kubectl -n kafka annotate kafka kafka strimzi.io/pause-reconciliation=true
+ for resource in kafka/kafka kafkanodepool/kafka kafkanodepool/kafka-controller; do
+   kubectl -n kafka patch "$resource" --subresource status --type merge -p "{\"status\":{\"clusterId\":\"$ID\"}}"
+ done
+ kubectl -n kafka annotate kafka kafka strimzi.io/pause-reconciliation-
+```
+
+If the ID is not known, read it from a volume, as described in the
+[Strimzi recovery guide](https://strimzi.io/docs/operators/latest/deploying#proc-cluster-recovery-volume-str).

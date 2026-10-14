@@ -1,11 +1,11 @@
-suite: test some attributes of the kafka CR
+suite: kafka entity operator resources per stage
 capabilities:
   apiVersions:
     - kafka.strimzi.io/v1/Kafka
 templates:
   - templates/kafka.yaml
 tests:
-- it: kafka topicOperator resources should not be set for local cluster
+- it: sets minimal topic operator resources on the local cluster
   values:
   - ../values-local.yaml
   asserts:
@@ -27,10 +27,10 @@ tests:
       pattern: "^0.*"
   - matchSnapshot: {}
 
-- it: kafka topicOperator resources should be set for development cluster
+- it: sets non-zero topic operator resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &topicOperatorResourcesAsserts
+  asserts: &topicOperatorResourcesAssert
   - matchRegex:
       path: spec.entityOperator.topicOperator.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -49,12 +49,12 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka topicOperator resources should be set for production cluster
+- it: sets non-zero topic operator resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *topicOperatorResourcesAsserts
+  asserts: *topicOperatorResourcesAssert
 
-- it: kafka userOperator resources should not be set for local cluster
+- it: sets minimal user operator resources on the local cluster
   values:
   - ../values-local.yaml
   asserts:
@@ -76,10 +76,10 @@ tests:
       pattern: "^0.*"
   - matchSnapshot: {}
 
-- it: kafka userOperator resources should be set for development cluster
+- it: sets non-zero user operator resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &userOperatorResourcesAsserts
+  asserts: &userOperatorResourcesAssert
   - matchRegex:
       path: spec.entityOperator.userOperator.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -98,7 +98,7 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka userOperator resources should be set for production cluster
+- it: sets non-zero user operator resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *userOperatorResourcesAsserts
+  asserts: *userOperatorResourcesAssert

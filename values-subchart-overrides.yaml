@@ -3,6 +3,7 @@ akhq:
     argocd.argoproj.io/sync-wave: "10"
   application:
     name: akhq
+    icon: https://raw.githubusercontent.com/tchiotludo/akhq/0.25.1/client/src/images/logo.svg
   # Explicitly adding (default) configuration to avoid missing application.yml
   configuration:
     akhq:

@@ -1,4 +1,4 @@
-suite: test some attributes of the kafka brokers
+suite: kafka broker KafkaNodePool per stage
 capabilities:
   apiVersions:
     - kafka.strimzi.io/v1/KafkaNodePool
@@ -6,7 +6,7 @@ templates:
   - templates/kafka-brokers.yaml
 tests:
 
-- it: kafka container resources should not be set for local cluster
+- it: sets non-zero broker resources on the local cluster
   values:
   - ../values-local.yaml
   asserts:
@@ -28,10 +28,10 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka container resources should be set for development cluster
+- it: sets non-zero broker resources on the development cluster
   values:
   - ../values-development.yaml
-  asserts: &kafkaResourcesAsserts
+  asserts: &brokerResourcesAssert
   - matchRegex:
       path: spec.resources.limits.cpu
       # on non-local cluster we expect non 0 cpu limits
@@ -50,14 +50,57 @@ tests:
       pattern: "^[1-9].*"
   - matchSnapshot: {}
 
-- it: kafka container resources should be set for production cluster
+- it: sets non-zero broker resources on the production cluster
   values:
   - ../values-production.yaml
-  asserts: *kafkaResourcesAsserts
+  asserts: *brokerResourcesAssert
 
-- it: kafka broker name
+- it: names the broker node pool kafka
   asserts:
   - equal:
       path: metadata.name
       value: kafka
   - matchSnapshot: {}
+
+- it: uses 1 broker replica on the local cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-local.yaml
+  asserts:
+  - equal:
+      path: spec.replicas
+      value: 1
+
+- it: uses 3 broker replicas on the development cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-development.yaml
+  asserts: &brokerReplicasAssert
+  - equal:
+      path: spec.replicas
+      value: 3
+
+- it: uses 3 broker replicas on the production cluster
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts: *brokerReplicasAssert
+
+- it: sets the broker persistent nfs1 storage volume
+  values:
+  - ../values-subchart-overrides.yaml
+  - ../values-production.yaml
+  asserts:
+  - equal:
+      path: spec.storage.volumes[?(@.id == 0)].type
+      value: persistent-claim
+  - equal:
+      path: spec.storage.volumes[?(@.id == 0)].class
+      value: nfs1
+  - equal:
+      path: spec.storage.volumes[?(@.id == 0)].size
+      value: 1Gi
+  # deleteClaim: false falls through `default` and renders as null; both
+  # keep the PVCs on deletion, so accept either but never true
+  - isNullOrEmpty:
+      path: spec.storage.volumes[?(@.id == 0)].deleteClaim

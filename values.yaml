@@ -67,6 +67,7 @@ nodeAffinityLabel: kubernetes.io/hostname
 schemaRegistry:
   application:
     name: schema-registry
+    icon: https://cdn.jsdelivr.net/npm/simple-icons@13.21.0/icons/apachekafka.svg
   bootstrap_servers: kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
   group_id: schema-registry
   image:

@@ -6,6 +6,6 @@ metadata:
 spec:
   name: {{ .Values.schemaRegistry.application.name }}
   group: {{ .Values.global.forecastle.group }}
-  icon: https://minio.{{ .Values.global.acme.domain }}/forecastle/icons/{{ .Values.schemaRegistry.application.name }}.png
+  icon: {{ .Values.schemaRegistry.application.icon }}
   url: https://{{ .Values.schemaRegistry.application.name }}.{{ .Values.global.acme.domain }}
 {{- end }}
